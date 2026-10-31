@@ -1,591 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10263e">
-  <meta name="description" content="Smart Healthcare Project Management System: a Java Swing and MySQL application for planning and monitoring a five-hospital healthcare software project.">
-  <title>CarePlan | Smart Healthcare Project Management</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --navy: #10263e;
-      --navy-soft: #1b3853;
-      --teal: #087f78;
-      --teal-light: #dff3ef;
-      --ink: #172b3d;
-      --muted: #627588;
-      --line: #dce6ec;
-      --canvas: #f3f7f8;
-      --white: #fff;
-      --shadow: 0 18px 48px rgba(16, 38, 62, .09);
-      font-family: "Segoe UI", Inter, Arial, sans-serif;
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      background: var(--canvas);
-      color: var(--ink);
-      line-height: 1.65;
-    }
-
-    a { color: inherit; }
-
-    .shell {
-      width: min(1120px, calc(100% - 40px));
-      margin: 0 auto;
-    }
-
-    .topbar {
-      background: var(--navy);
-      color: var(--white);
-      border-bottom: 1px solid rgba(255,255,255,.1);
-    }
-
-    .topbar-inner {
-      min-height: 76px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      font-size: 1.12rem;
-      font-weight: 750;
-      letter-spacing: -.02em;
-    }
-
-    .brand-mark {
-      display: grid;
-      width: 40px;
-      height: 40px;
-      place-items: center;
-      border-radius: 12px;
-      background: #10a399;
-      color: white;
-      font-size: .9rem;
-      font-weight: 800;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      color: #d6e4ed;
-      font-size: .9rem;
-    }
-
-    .nav-links a { text-decoration: none; }
-    .nav-links a:hover { color: white; }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 82px 0 76px;
-      background:
-        radial-gradient(ellipse at 83% 23%, rgba(35, 177, 157, .24), transparent 28%),
-        linear-gradient(120deg, var(--navy), #173b55 72%, #135b60);
-      color: white;
-    }
-
-    .hero::after {
-      position: absolute;
-      right: -120px;
-      bottom: -240px;
-      width: 520px;
-      height: 520px;
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 50%;
-      box-shadow: 0 0 0 55px rgba(255,255,255,.035), 0 0 0 110px rgba(255,255,255,.025);
-      content: "";
-      pointer-events: none;
-    }
-
-    .hero-grid {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(270px, .65fr);
-      align-items: center;
-      gap: 56px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 18px;
-      color: #a7e5d9;
-      font-size: .77rem;
-      font-weight: 750;
-      letter-spacing: .13em;
-      text-transform: uppercase;
-    }
-
-    .eyebrow::before {
-      width: 22px;
-      height: 2px;
-      background: #43d1b3;
-      content: "";
-    }
-
-    h1 {
-      max-width: 720px;
-      margin: 0;
-      font-size: clamp(2.4rem, 5vw, 4.25rem);
-      line-height: 1.08;
-      letter-spacing: -.045em;
-    }
-
-    .hero-copy {
-      max-width: 660px;
-      margin: 22px 0 0;
-      color: #d2e0e8;
-      font-size: 1.08rem;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 30px;
-    }
-
-    .button {
-      display: inline-flex;
-      min-height: 46px;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 18px;
-      border: 1px solid transparent;
-      border-radius: 9px;
-      font-size: .93rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: transform .18s ease, background .18s ease;
-    }
-
-    .button:hover { transform: translateY(-2px); }
-    .button-primary { background: #24b49e; color: #092d36; }
-    .button-primary:hover { background: #50cbb4; }
-    .button-secondary { border-color: rgba(255,255,255,.36); color: white; }
-    .button-secondary:hover { background: rgba(255,255,255,.09); }
-
-    .hero-note {
-      padding: 23px;
-      border: 1px solid rgba(255,255,255,.16);
-      border-radius: 16px;
-      background: rgba(255,255,255,.075);
-      backdrop-filter: blur(8px);
-    }
-
-    .hero-note-label {
-      margin: 0 0 14px;
-      color: #a7e5d9;
-      font-size: .76rem;
-      font-weight: 750;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
-
-    .hero-note strong {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 1.15rem;
-    }
-
-    .hero-note p {
-      margin: 0;
-      color: #d2e0e8;
-      font-size: .92rem;
-    }
-
-    .facts {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      margin-top: 25px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255,255,255,.16);
-    }
-
-    .fact + .fact {
-      padding-left: 15px;
-      border-left: 1px solid rgba(255,255,255,.16);
-    }
-
-    .fact strong, .fact span { display: block; }
-    .fact strong { font-size: 1.13rem; }
-    .fact span { color: #c1d3de; font-size: .76rem; }
-
-    main { padding: 58px 0 72px; }
-
-    .section { margin-bottom: 56px; }
-
-    .section-heading {
-      max-width: 700px;
-      margin-bottom: 24px;
-    }
-
-    .section-kicker {
-      margin: 0 0 8px;
-      color: var(--teal);
-      font-size: .76rem;
-      font-weight: 800;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    h2 {
-      margin: 0;
-      color: var(--navy);
-      font-size: clamp(1.7rem, 3vw, 2.35rem);
-      line-height: 1.2;
-      letter-spacing: -.035em;
-    }
-
-    .section-heading > p:last-child {
-      margin: 11px 0 0;
-      color: var(--muted);
-    }
-
-    .module-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .module-card {
-      min-height: 180px;
-      padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: var(--white);
-      box-shadow: 0 5px 18px rgba(16, 38, 62, .035);
-    }
-
-    .module-number {
-      display: inline-grid;
-      width: 35px;
-      height: 35px;
-      place-items: center;
-      border-radius: 10px;
-      background: var(--teal-light);
-      color: var(--teal);
-      font-size: .79rem;
-      font-weight: 800;
-    }
-
-    .module-card h3 {
-      margin: 15px 0 7px;
-      color: var(--navy);
-      font-size: 1.05rem;
-    }
-
-    .module-card p { margin: 0; color: var(--muted); font-size: .91rem; }
-
-    .highlight-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .highlight {
-      padding: 24px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: var(--white);
-    }
-
-    .highlight h3 { margin: 0 0 10px; color: var(--navy); font-size: 1.08rem; }
-    .highlight p { margin: 0; color: var(--muted); }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      counter-reset: step;
-    }
-
-    .step {
-      position: relative;
-      padding: 20px 20px 20px 58px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: white;
-      counter-increment: step;
-    }
-
-    .step::before {
-      position: absolute;
-      top: 19px;
-      left: 18px;
-      display: grid;
-      width: 27px;
-      height: 27px;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--navy);
-      color: white;
-      font-size: .78rem;
-      font-weight: 800;
-      content: counter(step);
-    }
-
-    .step h3 { margin: 0 0 6px; color: var(--navy); font-size: .98rem; }
-    .step p { margin: 0; color: var(--muted); font-size: .88rem; }
-
-    .deploy-box {
-      margin-top: 18px;
-      padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: white;
-    }
-
-    .deploy-box h3 { margin: 0 0 8px; color: var(--navy); font-size: 1rem; }
-    .deploy-box p { margin: 0; color: var(--muted); font-size: .91rem; }
-    .deploy-box ol { margin: 12px 0 0; padding-left: 21px; color: var(--ink); }
-    .deploy-box li { margin: 5px 0; }
-
-    .callout {
-      padding: 19px 21px;
-      border: 1px solid #e8d7a8;
-      border-radius: 11px;
-      background: #fff9e9;
-      color: #614f24;
-      font-size: .92rem;
-    }
-
-    .callout strong { color: #473b1d; }
-
-    .resource-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .resource-links a {
-      display: inline-flex;
-      min-height: 42px;
-      align-items: center;
-      padding: 8px 13px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: white;
-      color: var(--navy);
-      font-size: .88rem;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    .resource-links a:hover { border-color: var(--teal); color: var(--teal); }
-
-    footer {
-      padding: 25px 0;
-      border-top: 1px solid var(--line);
-      background: white;
-      color: var(--muted);
-      font-size: .86rem;
-    }
-
-    .footer-inner {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 10px 24px;
-    }
-
-    @media (max-width: 800px) {
-      .hero-grid { grid-template-columns: 1fr; gap: 30px; }
-      .hero-note { max-width: 520px; }
-      .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .steps { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 560px) {
-      .shell { width: min(100% - 28px, 1120px); }
-      .topbar-inner { min-height: 66px; }
-      .nav-links { gap: 12px; font-size: .8rem; }
-      .nav-links a:first-child { display: none; }
-      .hero { padding: 58px 0 54px; }
-      .hero-copy { font-size: 1rem; }
-      main { padding: 42px 0 52px; }
-      .module-grid, .highlight-grid { grid-template-columns: 1fr; }
-      .module-card { min-height: 0; }
-      .facts { gap: 8px; }
-      .fact + .fact { padding-left: 9px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { transition-duration: .01ms !important; }
-    }
-  </style>
+  <meta name="theme-color" content="#12263c">
+  <meta name="description" content="CarePlan healthcare project management workspace">
+  <title>CarePlan | Healthcare Project Workspace</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="shell topbar-inner">
-      <a class="brand" href="#" aria-label="CarePlan project home">
-        <span class="brand-mark" aria-hidden="true">SH</span>
-        <span>CarePlan</span>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#dashboard" aria-label="CarePlan dashboard">
+        <span class="brand-mark">CP</span>
+        <span class="brand-copy"><strong>CarePlan</strong><small>PROJECT WORKSPACE</small></span>
       </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#modules">Modules</a>
-        <a href="#features">Highlights</a>
-        <a href="#run">Run locally</a>
+      <div class="nav-caption">PROJECT DELIVERY</div>
+      <nav class="navigation" aria-label="Project modules">
+        <button class="nav-link active" data-page="dashboard"><span class="nav-icon">⌂</span><span>Overview</span></button>
+        <button class="nav-link" data-page="initiation"><span class="nav-icon">01</span><span>Initiation</span></button>
+        <button class="nav-link" data-page="scope"><span class="nav-icon">02</span><span>Scope &amp; WBS</span></button>
+        <button class="nav-link" data-page="schedule"><span class="nav-icon">03</span><span>Schedule</span></button>
+        <button class="nav-link" data-page="cost"><span class="nav-icon">04</span><span>Cost &amp; EVM</span></button>
+        <button class="nav-link" data-page="quality"><span class="nav-icon">05</span><span>Quality &amp; Risk</span></button>
       </nav>
-    </div>
-  </header>
+      <div class="sidebar-bottom">
+        <div class="storage-indicator"><span class="storage-dot"></span><span>Saved in this browser</span></div>
+        <small>CarePlan · Smart Healthcare PMS</small>
+      </div>
+    </aside>
 
-  <section class="hero">
-    <div class="shell hero-grid">
-      <div>
-        <p class="eyebrow">Healthcare delivery, clearly managed</p>
-        <h1>One workspace for a complex hospital software project.</h1>
-        <p class="hero-copy">
-          CarePlan is a database-backed project management application for planning,
-          tracking, and controlling a Smart Healthcare System serving five hospitals.
-        </p>
-        <div class="actions">
-          <a class="button button-primary" href="#run">Get started locally</a>
-          <a class="button button-secondary" href="#modules">Explore the modules</a>
+    <main class="main-area">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
+        <div class="breadcrumb"><span>Smart Healthcare</span><span class="crumb-separator">/</span><strong id="current-section">Overview</strong></div>
+        <div class="top-actions">
+          <span class="today-label" id="today-label"></span>
+          <button class="button button-outline button-small" id="export-data">Export backup</button>
+          <button class="button button-outline button-small" id="import-data">Import backup</button>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
         </div>
+      </header>
+      <div class="page-container" id="page-container"></div>
+      <footer class="app-footer">
+        <span>CarePlan <span class="footer-divider">·</span> Project operations workspace</span>
+        <span>Browser storage is local to this device and browser.</span>
+      </footer>
+    </main>
+  </div>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+  <dialog id="record-dialog" class="record-dialog">
+    <form id="record-form" method="dialog">
+      <div class="dialog-header">
+        <div><p class="eyebrow" id="dialog-eyebrow">PROJECT RECORD</p><h2 id="dialog-title">Add record</h2></div>
+        <button type="button" class="icon-button" id="close-dialog" aria-label="Close dialog">×</button>
       </div>
-      <aside class="hero-note" aria-label="Project case study at a glance">
-        <p class="hero-note-label">The case study</p>
-        <strong>Five hospitals. One delivery plan.</strong>
-        <p>Coordinate appointments, lab reports, doctor schedules, online consultations, and billing while keeping scope, timing, budget, and quality visible.</p>
-        <div class="facts">
-          <div class="fact"><strong>16</strong><span>week target</span></div>
-          <div class="fact"><strong>PKR 5M</strong><span>base budget</span></div>
-          <div class="fact"><strong>6</strong><span>management modules</span></div>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <main class="shell">
-    <section class="section" id="modules">
-      <div class="section-heading">
-        <p class="section-kicker">Project workspace</p>
-        <h2>Six connected areas of project control</h2>
-        <p>Move from the charter to delivery monitoring with project records stored in MySQL.</p>
+      <div class="dialog-fields" id="dialog-fields"></div>
+      <div class="dialog-actions">
+        <button type="button" class="button button-outline" id="cancel-dialog">Cancel</button>
+        <button type="submit" class="button button-primary">Save record</button>
       </div>
-      <div class="module-grid">
-        <article class="module-card">
-          <span class="module-number">01</span>
-          <h3>Initiation &amp; integration</h3>
-          <p>Maintain the charter, project plan, stakeholders, team responsibilities, milestones, and closure information.</p>
-        </article>
-        <article class="module-card">
-          <span class="module-number">02</span>
-          <h3>Scope &amp; WBS</h3>
-          <p>Manage requirement priorities and approvals, organize WBS items, and record change requests with cost and schedule impacts.</p>
-        </article>
-        <article class="module-card">
-          <span class="module-number">03</span>
-          <h3>Schedule &amp; resources</h3>
-          <p>Assign activities, define predecessors, generate dates, review delay impacts, and view the schedule timeline.</p>
-        </article>
-        <article class="module-card">
-          <span class="module-number">04</span>
-          <h3>Cost &amp; earned value</h3>
-          <p>Review planned and actual activity costs alongside project earned-value indicators.</p>
-        </article>
-        <article class="module-card">
-          <span class="module-number">05</span>
-          <h3>Quality &amp; risk</h3>
-          <p>Track defect severity and resolution, quality inspection results, and likelihood-impact risk priorities.</p>
-        </article>
-        <article class="module-card">
-          <span class="module-number">06</span>
-          <h3>Dashboard &amp; validation</h3>
-          <p>See project health indicators, readiness checks, quality results, open defects, active risks, and pending changes.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section" id="features">
-      <div class="section-heading">
-        <p class="section-kicker">Built for the case study</p>
-        <h2>Follow changes and issues through the project</h2>
-      </div>
-      <div class="highlight-grid">
-        <article class="highlight">
-          <h3>Change control with project impact</h3>
-          <p>Record proposed requirements and their justification. Approved requests update the project budget and deadline and promote the linked requirement into approved scope.</p>
-        </article>
-        <article class="highlight">
-          <h3>Quality findings stay visible</h3>
-          <p>Track scheduling and patient-record defects, assign owners, record inspection outcomes, and prioritize risks using likelihood and impact.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section" id="run">
-      <div class="section-heading">
-        <p class="section-kicker">Run the desktop application</p>
-        <h2>Set it up on your computer</h2>
-        <p>The deployed GitHub Pages site is a project landing page. The Java Swing application runs locally and connects to MySQL.</p>
-      </div>
-      <div class="steps">
-        <article class="step">
-          <h3>Install prerequisites</h3>
-          <p>Install a Java Development Kit and start MySQL through XAMPP or another local MySQL-compatible server.</p>
-        </article>
-        <article class="step">
-          <h3>Import the case-study database</h3>
-          <p>Import <code>spms_db.sql</code> into MySQL using phpMyAdmin or the MySQL command line.</p>
-        </article>
-        <article class="step">
-          <h3>Compile and launch</h3>
-          <p>On Windows, run <code>run.bat</code> from the project folder. It compiles the Java sources and launches the Swing application.</p>
-        </article>
-      </div>
-      <div class="callout" style="margin-top: 18px">
-        <strong>Database import warning:</strong> <code>spms_db.sql</code> drops and recreates the project tables. Importing it replaces existing data in those tables; back up any data you need first.
-      </div>
-      <div class="resource-links" aria-label="Project resources">
-        <a href="./run.bat">Windows run script</a>
-        <a href="./spms_db.sql">Database schema and sample data</a>
-        <a href="./src/spms/Main.java">Application entry point</a>
-      </div>
-      <div class="deploy-box">
-        <h3>Publish this landing page with GitHub Pages</h3>
-        <p>After pushing the repository to GitHub:</p>
-        <ol>
-          <li>Open the repository's <strong>Settings</strong> and select <strong>Pages</strong>.</li>
-          <li>Under the build and deployment settings, choose <strong>Deploy from a branch</strong>.</li>
-          <li>Select the <strong>main</strong> branch and <strong>/(root)</strong>, then save.</li>
-          <li>When deployment finishes, open the Pages URL shown in Settings.</li>
-        </ol>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-heading">
-        <p class="section-kicker">Technology</p>
-        <h2>Plain Java, Swing, and MySQL</h2>
-        <p>A desktop application built around a relational database, without a web framework. Source code and database setup files are included in the repository.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="shell footer-inner">
-      <span>CarePlan · Smart Healthcare Project Management System</span>
-      <span>Academic case-study project · Java Swing + MySQL</span>
-    </div>
-  </footer>
+    </form>
+  </dialog>
 </body>
 </html>
