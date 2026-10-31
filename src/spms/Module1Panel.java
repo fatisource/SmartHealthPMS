@@ -99,16 +99,16 @@ public class Module1Panel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         int row = 0;
-        addField(fields, gbc, row++, "Project name:", projectNameField, 0, 0, 1);
-        addTextAreaField(fields, gbc, row++, "Objectives:", new JScrollPane(objectivesArea), 0, 0, 1);
-        addTextAreaField(fields, gbc, row++, "Scope boundaries:", new JScrollPane(scopeArea), 0, 0, 1);
-        addField(fields, gbc, row, "Approved budget:", approvedBudgetField, 0, 0, 1);
-        addField(fields, gbc, row, "Status:", projectStatusCombo, 0, 1, 1);
+        addField(fields, gbc, row++, "Project name:", projectNameField, 0, 3);
+        addTextAreaField(fields, gbc, row++, "Objectives:", new JScrollPane(objectivesArea), 0, 3);
+        addTextAreaField(fields, gbc, row++, "Scope boundaries:", new JScrollPane(scopeArea), 0, 3);
+        addField(fields, gbc, row, "Approved budget:", approvedBudgetField, 0, 1);
+        addField(fields, gbc, row, "Status:", projectStatusCombo, 1, 1);
         row++;
-        addField(fields, gbc, row, "Start date (yyyy-MM-dd):", startDateField, 0, 0, 1);
-        addField(fields, gbc, row, "Deadline (yyyy-MM-dd):", deadlineField, 0, 1, 1);
+        addField(fields, gbc, row, "Start date (yyyy-MM-dd):", startDateField, 0, 1);
+        addField(fields, gbc, row, "Deadline (yyyy-MM-dd):", deadlineField, 1, 1);
         row++;
-        addField(fields, gbc, row++, "Status date (yyyy-MM-dd):", statusDateField, 0, 0, 1);
+        addField(fields, gbc, row++, "Status date (yyyy-MM-dd):", statusDateField, 0, 3);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton save = new JButton("Save Project");
@@ -236,24 +236,36 @@ public class Module1Panel extends JPanel {
         return panel;
     }
 
-    private void addField(JPanel panel, GridBagConstraints gbc, int row, String label, JComponent field, int x, int y, int width) {
-        gbc.gridx = x;
-        gbc.gridy = row;
-        gbc.gridwidth = 1;
-        panel.add(new JLabel(label), gbc);
-        gbc.gridx = x + 1;
-        gbc.gridwidth = width;
-        panel.add(field, gbc);
+    private void addField(JPanel panel, GridBagConstraints gbc, int row, String label, JComponent field, int group, int fieldSpan) {
+        addGridBagField(panel, gbc, row, label, field, group, fieldSpan);
     }
 
-    private void addTextAreaField(JPanel panel, GridBagConstraints gbc, int row, String label, JScrollPane field, int x, int y, int width) {
-        gbc.gridx = x;
+    private void addTextAreaField(JPanel panel, GridBagConstraints gbc, int row, String label, JScrollPane field, int group, int fieldSpan) {
+        addGridBagField(panel, gbc, row, label, field, group, fieldSpan);
+    }
+
+    private void addGridBagField(JPanel panel, GridBagConstraints gbc, int row, String label,
+                                 JComponent field, int group, int fieldSpan) {
+        int labelColumn = group * 2;
         gbc.gridy = row;
+        gbc.gridx = labelColumn;
         gbc.gridwidth = 1;
-        panel.add(new JLabel(label), gbc);
-        gbc.gridx = x + 1;
-        gbc.gridwidth = width;
-        panel.add(field, gbc);
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.LINE_END;
+        panel.add(new JLabel(label), (GridBagConstraints) gbc.clone());
+
+        gbc.gridx = labelColumn + 1;
+        gbc.gridwidth = fieldSpan;
+        gbc.weightx = 1;
+        gbc.fill = field instanceof JScrollPane ? GridBagConstraints.BOTH : GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        if (field instanceof JScrollPane) {
+            gbc.weighty = 1;
+        }
+        panel.add(field, (GridBagConstraints) gbc.clone());
+        gbc.weighty = 0;
     }
 
     private void refreshAll() {

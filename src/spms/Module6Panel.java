@@ -1,6 +1,8 @@
 package spms;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.math.BigDecimal;
@@ -14,15 +16,19 @@ import java.util.List;
 
 public class Module6Panel extends JPanel {
     private static final int PROJECT_ID = 1;
+    private static final Color NAVY = new Color(22, 38, 63);
+    private static final Color MUTED = new Color(113, 128, 150);
+    private static final Color BORDER = new Color(226, 232, 240);
+    private static final Font DASHBOARD_FONT = new Font("Segoe UI", Font.PLAIN, 13);
 
-    private final JLabel projectNameLabel = new JLabel("Project: -");
-    private final JLabel projectStatusLabel = new JLabel("Status: -");
-    private final JLabel budgetLabel = new JLabel("Budget: -");
-    private final JLabel milestoneLabel = new JLabel("Milestones: -");
-    private final JLabel requirementsLabel = new JLabel("Requirements: -");
-    private final JLabel defectsLabel = new JLabel("Open defects: -");
-    private final JLabel risksLabel = new JLabel("Risks: -");
-    private final JLabel qualityLabel = new JLabel("Quality: -");
+    private final MetricCard projectCard = new MetricCard("PROJECT STATUS", "-", "Current project lifecycle");
+    private final MetricCard activityCard = new MetricCard("ACTIVITY PROGRESS", "-", "Activities completed");
+    private final MetricCard requirementCard = new MetricCard("APPROVED REQUIREMENTS", "-", "Approved baseline");
+    private final MetricCard milestoneCard = new MetricCard("MILESTONES", "-", "Milestones achieved");
+    private final MetricCard defectCard = new MetricCard("OPEN DEFECTS", "-", "Items needing follow-up");
+    private final MetricCard riskCard = new MetricCard("ACTIVE RISKS", "-", "Risks being monitored");
+    private final MetricCard qualityCard = new MetricCard("QUALITY CHECKS", "-", "Inspection pass rate");
+    private final MetricCard budgetCard = new MetricCard("APPROVED BUDGET", "-", "Project budget baseline");
 
     private final DefaultTableModel validationModel = new DefaultTableModel(
             new Object[]{"Validation check", "Status", "Details"}, 0) {
@@ -36,46 +42,115 @@ public class Module6Panel extends JPanel {
     private final JTextArea executiveSummary = new JTextArea();
 
     public Module6Panel() {
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        JPanel summaryPanel = new JPanel(new GridLayout(2, 4, 10, 10));
-        summaryPanel.setBorder(BorderFactory.createTitledBorder("Project Dashboard"));
-        summaryPanel.add(projectNameLabel);
-        summaryPanel.add(projectStatusLabel);
-        summaryPanel.add(budgetLabel);
-        summaryPanel.add(milestoneLabel);
-        summaryPanel.add(requirementsLabel);
-        summaryPanel.add(defectsLabel);
-        summaryPanel.add(risksLabel);
-        summaryPanel.add(qualityLabel);
+        setLayout(new BorderLayout(14, 14));
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setBackground(Color.WHITE);
 
         JPanel validationPanel = new JPanel(new BorderLayout(8, 8));
-        validationPanel.setBorder(BorderFactory.createTitledBorder("Integration validation"));
+        validationPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER), new EmptyBorder(12, 12, 12, 12)));
+        validationPanel.setBackground(Color.WHITE);
+        JLabel validationHeading = sectionHeading("Readiness checks");
+        validationPanel.add(validationHeading, BorderLayout.NORTH);
+        validationTable.setRowHeight(34);
+        validationTable.setShowVerticalLines(false);
+        validationTable.setGridColor(new Color(235, 239, 244));
+        validationTable.setFillsViewportHeight(true);
+        validationTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        validationTable.getTableHeader().setReorderingAllowed(false);
+        validationTable.getTableHeader().setPreferredSize(new Dimension(0, 34));
+        validationTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean selected,
+                                                           boolean focused, int row, int column) {
+                Component cell = super.getTableCellRendererComponent(table, value, selected, focused, row, column);
+                if (!selected) {
+                    if (column == 1) {
+                        String status = String.valueOf(value);
+                        cell.setForeground("Pass".equals(status) ? new Color(20, 112, 95)
+                                : "Fail".equals(status) ? new Color(170, 55, 45) : new Color(150, 100, 18));
+                        setFont(DASHBOARD_FONT.deriveFont(Font.BOLD));
+                    } else {
+                        cell.setForeground(column == 0 ? NAVY : MUTED);
+                        setFont(DASHBOARD_FONT);
+                    }
+                    cell.setBackground(Color.WHITE);
+                }
+                setBorder(new EmptyBorder(4, 8, 4, 8));
+                return cell;
+            }
+        });
         validationPanel.add(new JScrollPane(validationTable), BorderLayout.CENTER);
 
         JPanel summaryTextPanel = new JPanel(new BorderLayout(8, 8));
-        summaryTextPanel.setBorder(BorderFactory.createTitledBorder("Executive summary"));
+        summaryTextPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER), new EmptyBorder(12, 12, 12, 12)));
+        summaryTextPanel.setBackground(Color.WHITE);
+        summaryTextPanel.add(sectionHeading("Manager's brief"), BorderLayout.NORTH);
         executiveSummary.setEditable(false);
         executiveSummary.setLineWrap(true);
         executiveSummary.setWrapStyleWord(true);
-        executiveSummary.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
+        executiveSummary.setFont(DASHBOARD_FONT.deriveFont(14f));
+        executiveSummary.setForeground(NAVY);
+        executiveSummary.setBackground(new Color(248, 250, 252));
+        executiveSummary.setBorder(new EmptyBorder(14, 14, 14, 14));
         summaryTextPanel.add(new JScrollPane(executiveSummary), BorderLayout.CENTER);
 
-        JSplitPane centerSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, validationPanel, summaryTextPanel);
-        centerSplit.setResizeWeight(0.6);
+        JSplitPane centerSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, validationPanel, summaryTextPanel);
+        centerSplit.setResizeWeight(0.62);
+        centerSplit.setBorder(null);
+        centerSplit.setContinuousLayout(true);
 
         JButton refreshBtn = new JButton("Refresh dashboard");
+        refreshBtn.setFont(DASHBOARD_FONT.deriveFont(Font.BOLD, 12f));
+        refreshBtn.setForeground(Color.WHITE);
+        refreshBtn.setBackground(new Color(20, 145, 137));
+        refreshBtn.setBorder(new EmptyBorder(9, 15, 9, 15));
+        refreshBtn.setFocusPainted(false);
         refreshBtn.addActionListener(e -> refresh());
 
-        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        footer.add(refreshBtn);
+        JPanel top = new JPanel(new BorderLayout(10, 10));
+        top.setBackground(Color.WHITE);
+        JPanel topHeading = new JPanel();
+        topHeading.setOpaque(false);
+        topHeading.setLayout(new BoxLayout(topHeading, BoxLayout.Y_AXIS));
+        JLabel overview = sectionHeading("Project at a glance");
+        JLabel explanation = new JLabel("Quickly review delivery progress and items that may need attention.");
+        explanation.setFont(DASHBOARD_FONT);
+        explanation.setForeground(MUTED);
+        explanation.setBorder(new EmptyBorder(4, 0, 0, 0));
+        topHeading.add(overview);
+        topHeading.add(explanation);
+        top.add(topHeading, BorderLayout.WEST);
+        top.add(refreshBtn, BorderLayout.EAST);
 
-        add(summaryPanel, BorderLayout.NORTH);
+        JPanel metrics = new JPanel(new GridLayout(2, 4, 10, 10));
+        metrics.setOpaque(false);
+        metrics.add(projectCard);
+        metrics.add(activityCard);
+        metrics.add(requirementCard);
+        metrics.add(milestoneCard);
+        metrics.add(defectCard);
+        metrics.add(riskCard);
+        metrics.add(qualityCard);
+        metrics.add(budgetCard);
+
+        JPanel north = new JPanel(new BorderLayout(0, 12));
+        north.setBackground(Color.WHITE);
+        north.add(top, BorderLayout.NORTH);
+        north.add(metrics, BorderLayout.CENTER);
+
+        add(north, BorderLayout.NORTH);
         add(centerSplit, BorderLayout.CENTER);
-        add(footer, BorderLayout.SOUTH);
 
         refresh();
+    }
+
+    private JLabel sectionHeading(String text) {
+        JLabel heading = new JLabel(text);
+        heading.setFont(DASHBOARD_FONT.deriveFont(Font.BOLD, 16f));
+        heading.setForeground(NAVY);
+        return heading;
     }
 
     private void refresh() {
@@ -113,6 +188,7 @@ public class Module6Panel extends JPanel {
         data.completedActivities = countInt(c, "SELECT COUNT(*) FROM activity WHERE project_id = ? AND status = 'Completed'", PROJECT_ID);
         data.totalDefects = countInt(c, "SELECT COUNT(*) FROM defect WHERE project_id = ?", PROJECT_ID);
         data.openDefects = countInt(c, "SELECT COUNT(*) FROM defect WHERE project_id = ? AND status NOT IN ('Resolved','Closed')", PROJECT_ID);
+        data.criticalOpenDefects = countInt(c, "SELECT COUNT(*) FROM defect WHERE project_id = ? AND severity = 'Critical' AND status NOT IN ('Resolved','Closed')", PROJECT_ID);
         data.totalRisks = countInt(c, "SELECT COUNT(*) FROM risk WHERE project_id = ?", PROJECT_ID);
         data.openRisks = countInt(c, "SELECT COUNT(*) FROM risk WHERE project_id = ? AND status IN ('Open','Mitigated','Occurred')", PROJECT_ID);
         data.totalQualityChecks = countInt(c, "SELECT COUNT(*) FROM quality_check WHERE project_id = ?", PROJECT_ID);
@@ -128,6 +204,8 @@ public class Module6Panel extends JPanel {
                 data.approvedRequirements + " approved requirement(s) in the project."));
         data.validationRows.add(new ValidationRow("Schedule readiness", data.totalActivities > 0 ? "Pass" : "Warning",
                 data.totalActivities + " activity record(s) are tracked against the WBS and schedule."));
+        data.validationRows.add(new ValidationRow("Critical defect follow-up", data.criticalOpenDefects == 0 ? "Pass" : "Warning",
+                data.criticalOpenDefects + " unresolved critical defect(s) need priority review."));
         data.validationRows.add(new ValidationRow("Defect control", data.openDefects <= 5 ? "Pass" : "Warning",
                 data.openDefects + " open defect(s) require follow-up."));
         data.validationRows.add(new ValidationRow("Quality assurance", data.totalQualityChecks > 0 ? (data.passedQualityChecks * 100.0 / data.totalQualityChecks >= 80 ? "Pass" : "Warning") : "Warning",
@@ -141,14 +219,24 @@ public class Module6Panel extends JPanel {
     }
 
     private void renderDashboard(DashboardData data) {
-        projectNameLabel.setText("Project: " + (data.projectName == null ? "-" : data.projectName));
-        projectStatusLabel.setText("Status: " + (data.projectStatus == null ? "-" : data.projectStatus));
-        budgetLabel.setText("Budget: " + money(data.approvedBudget));
-        milestoneLabel.setText("Milestones: " + data.achievedMilestones + "/" + data.totalMilestones + " achieved");
-        requirementsLabel.setText("Requirements: " + data.approvedRequirements + "/" + data.totalRequirements + " approved");
-        defectsLabel.setText("Open defects: " + data.openDefects + " / " + data.totalDefects);
-        risksLabel.setText("Risks: " + data.openRisks + " active");
-        qualityLabel.setText("Quality: " + (data.totalQualityChecks == 0 ? "0%" : percent(data.passedQualityChecks, data.totalQualityChecks)) + " pass");
+        projectCard.setMetric(data.projectStatus == null ? "Not found" : data.projectStatus,
+                data.projectName == null ? "No project record for project ID " + PROJECT_ID : data.projectName);
+        activityCard.setMetric(data.completedActivities + " / " + data.totalActivities,
+                data.totalActivities == 0 ? "No activities recorded" : percent(data.completedActivities, data.totalActivities) + " complete");
+        requirementCard.setMetric(data.approvedRequirements + " / " + data.totalRequirements,
+                data.totalRequirements == 0 ? "No requirements recorded" : "Approved and ready for delivery");
+        milestoneCard.setMetric(data.achievedMilestones + " / " + data.totalMilestones,
+                data.totalMilestones == 0 ? "No milestones recorded" : "Milestones achieved");
+        defectCard.setMetric(Integer.toString(data.openDefects),
+                data.criticalOpenDefects + " critical, " + data.openDefects + " open total");
+        defectCard.setAccent(data.criticalOpenDefects > 0 ? new Color(183, 62, 54)
+                : data.openDefects > 0 ? new Color(194, 128, 35) : new Color(20, 145, 137));
+        riskCard.setMetric(Integer.toString(data.openRisks),
+                data.openRisks + " active of " + data.totalRisks + " total");
+        riskCard.setAccent(data.openRisks > 0 ? new Color(194, 128, 35) : new Color(20, 145, 137));
+        qualityCard.setMetric(data.totalQualityChecks == 0 ? "No data" : percent(data.passedQualityChecks, data.totalQualityChecks),
+                data.passedQualityChecks + " passed of " + data.totalQualityChecks + " checks");
+        budgetCard.setMetric(money(data.approvedBudget), "Approved project budget");
 
         validationModel.setRowCount(0);
         for (ValidationRow row : data.validationRows) {
@@ -168,13 +256,28 @@ public class Module6Panel extends JPanel {
         sb.append("Open defects: ").append(data.openDefects).append(" | Active risks: ").append(data.openRisks).append("\n");
         sb.append("Quality compliance: ").append(data.totalQualityChecks == 0 ? "No checks recorded" : percent(data.passedQualityChecks, data.totalQualityChecks) + " pass rate").append("\n");
         sb.append("Pending change requests: ").append(data.pendingChanges).append("\n\n");
-        sb.append("Recommendation: ");
-        if (data.openDefects <= 2 && data.openRisks <= 3 && data.pendingChanges <= 2) {
-            sb.append("The project is stable and ready for continued execution or final review.");
-        } else if (data.openDefects <= 5 && data.openRisks <= 5) {
-            sb.append("The project remains manageable, but defect closure and risk mitigation should be tracked weekly.");
-        } else {
-            sb.append("Immediate attention is required to reduce unresolved defects, active risks, and pending change approvals.");
+        sb.append("Suggested next steps\n");
+        int actions = 0;
+        if (data.openDefects > 0) {
+            sb.append(data.criticalOpenDefects > 0
+                    ? "- Prioritize the " + data.criticalOpenDefects + " unresolved critical defect(s), then review remaining open defects.\n"
+                    : "- Review open defects and confirm owners and follow-up dates.\n");
+            actions++;
+        }
+        if (data.openRisks > 0) {
+            sb.append("- Review active risks and confirm response actions with their owners.\n");
+            actions++;
+        }
+        if (data.pendingChanges > 0) {
+            sb.append("- Review pending change requests through the change-control process.\n");
+            actions++;
+        }
+        if (data.totalQualityChecks == 0 || data.passedQualityChecks < data.totalQualityChecks) {
+            sb.append("- Review failed or pending quality checks before sign-off.\n");
+            actions++;
+        }
+        if (actions == 0) {
+            sb.append("- No open follow-up items are recorded. Continue routine project monitoring.\n");
         }
         return sb.toString();
     }
@@ -220,6 +323,7 @@ public class Module6Panel extends JPanel {
         int completedActivities;
         int totalDefects;
         int openDefects;
+        int criticalOpenDefects;
         int totalRisks;
         int openRisks;
         int totalQualityChecks;
@@ -239,6 +343,48 @@ public class Module6Panel extends JPanel {
             this.check = check;
             this.status = status;
             this.details = details;
+        }
+    }
+
+    private static class MetricCard extends JPanel {
+        private final JLabel valueLabel = new JLabel();
+        private final JLabel detailLabel = new JLabel();
+        private final JPanel stripe = new JPanel();
+
+        MetricCard(String title, String value, String detail) {
+            setLayout(new BorderLayout(0, 7));
+            setBackground(Color.WHITE);
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(BORDER),
+                    new EmptyBorder(11, 12, 11, 12)));
+            JLabel titleLabel = new JLabel(title);
+            titleLabel.setFont(DASHBOARD_FONT.deriveFont(Font.BOLD, 10f));
+            titleLabel.setForeground(MUTED);
+            valueLabel.setText(value);
+            valueLabel.setFont(DASHBOARD_FONT.deriveFont(Font.BOLD, 20f));
+            valueLabel.setForeground(NAVY);
+            detailLabel.setText(detail);
+            detailLabel.setFont(DASHBOARD_FONT.deriveFont(11f));
+            detailLabel.setForeground(MUTED);
+            JPanel text = new JPanel(new BorderLayout(0, 5));
+            text.setOpaque(false);
+            text.add(titleLabel, BorderLayout.NORTH);
+            text.add(valueLabel, BorderLayout.CENTER);
+            text.add(detailLabel, BorderLayout.SOUTH);
+            stripe.setBackground(new Color(20, 145, 137));
+            stripe.setPreferredSize(new Dimension(4, 0));
+            add(stripe, BorderLayout.WEST);
+            add(text, BorderLayout.CENTER);
+            setMetric(value, detail);
+        }
+
+        void setMetric(String value, String detail) {
+            valueLabel.setText(value);
+            detailLabel.setText(detail);
+        }
+
+        void setAccent(Color color) {
+            stripe.setBackground(color);
         }
     }
 }
