@@ -54,7 +54,7 @@ export const entityConfigs = {
       { key: "reported_date", label: "Reported date", type: "date", required: true }, { key: "resolved_date", label: "Resolved date", type: "date" }
     ] },
     quality: { title: "Quality inspection", fields: [
-      { key: "wbs_id", label: "WBS item", type: "ref", ref: "wbs", optionLabel: item => `${item.code} · ${item.name}` },
+      { key: "wbs_id", label: "WBS item", type: "ref", ref: "wbs", optionLabel: item => `${item.code} · ${item.name}`, required: true },
       { key: "result", label: "Inspection result", type: "select", options: ["Pending", "Pass", "Fail"] },
       { key: "item", label: "Checklist / inspection item", required: true, span: 2 },
       { key: "inspector_id", label: "Inspector", type: "ref", ref: "team", optionLabel: item => `${item.name} · ${item.role}` },

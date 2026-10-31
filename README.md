@@ -1,22 +1,21 @@
 # CarePlan
 
-CarePlan is a static, browser-based project management workspace for the Smart Healthcare Project Management System case study. It uses native JavaScript ES modules, HTML, and CSS; no package installation or build step is required.
+CarePlan is a PHP/MySQL-backed project management workspace for the Smart Healthcare Project Management System case study. Its browser interface uses native JavaScript ES modules, HTML, and CSS; no package installation or build step is required.
 
-## Run locally
+## Run with XAMPP
 
-Serve the repository root over HTTP, then open the local address in a modern browser. For example, with Python installed, run `python -m http.server 8000` from the repository directory and open `http://localhost:8000`. Serving over HTTP is needed because browsers restrict JavaScript modules opened directly with `file://`.
+1. Start **MySQL** in the XAMPP Control Panel.
+2. Open phpMyAdmin and select the `spms_db` database. If the project tables do not exist yet, use **Import** and select `database/schema.sql`. The schema uses `CREATE TABLE IF NOT EXISTS` and does not delete existing records.
+3. If your local MySQL credentials differ from XAMPP defaults, copy `api/config.local.example.php` to `api/config.local.php` and edit the values. The local config is ignored by Git.
+4. Run `run-xampp.bat` and open `http://127.0.0.1:8000`.
 
-The app starts with sample project data the first time it is opened.
+The app loads the existing project and module records from `spms_db`. If the database is empty, the case-study sample records are inserted automatically. The application stores each module in its own existing relational table and saves changes transactionally. The API accepts local-machine requests only.
 
-## Deploy with GitHub Pages
+Do not open `index.html` directly as a `file://` URL: module scripts and the PHP API require an HTTP server.
 
-1. Push the repository to GitHub.
-2. Open the repository's **Settings → Pages**.
-3. Under **Build and deployment**, choose **Deploy from a branch**.
-4. Select the `main` branch and `/ (root)` folder, then save.
-5. Open the Pages URL shown on that settings page.
+## Hosting note
 
-GitHub Pages serves the root `index.html`, which loads `styles.css` and the small root `app.js` entrypoint. The entrypoint imports the application modules from `js/`.
+GitHub Pages cannot run PHP or connect to MySQL. Keep this XAMPP setup local for the exam/demo. Public multi-user deployment requires a separately hosted PHP API and database, plus authentication and production database credentials; do not expose the XAMPP database or commit production secrets.
 
 ## Project structure
 
@@ -25,6 +24,13 @@ GitHub Pages serves the root `index.html`, which loads `styles.css` and the smal
 ├── index.html
 ├── styles.css
 ├── app.js                 # Browser entrypoint
+├── api/
+│   ├── config.php         # Local database connection
+│   ├── state.php          # Transactional API entrypoint
+│   └── modules/           # Project, initiation, scope, schedule, quality persistence
+├── database/
+│   └── schema.sql         # Non-destructive schema for spms_db
+├── run-xampp.bat          # Starts a local PHP server
 ├── js/
 │   ├── app.js             # Application startup and page rendering
 │   ├── config.js          # Module labels and shared constants
@@ -57,8 +63,8 @@ GitHub Pages serves the root `index.html`, which loads `styles.css` and the smal
 - **Cost & EVM:** planned value, earned value, actual cost, CPI, SPI, and threshold warnings.
 - **Quality & risk:** defect tracking, deliverable inspections, risk prioritization, and response plans.
 
-The app validates records, saves changes in browser `localStorage`, and supports JSON backup export and import. Approving a change request applies its linked requirement and cost/schedule impacts to the project baseline.
+The app validates records, stores them in MySQL, and supports JSON backup export and import. Approving a change request applies its linked requirement and cost/schedule impacts to the project baseline.
 
 ## Data and hosting limitations
 
-Browser data is stored only in the current browser on the current device. It is not shared with other users or synchronized between devices. Export a JSON backup regularly if you need to preserve or transfer project data. GitHub Pages is static hosting; it does not provide a shared backend or database. Do not enter real patient or other sensitive information.
+This project-management app stores its data in the local `spms_db` database. It is not a patient-record system; do not enter real patient or other sensitive information.

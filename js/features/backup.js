@@ -12,16 +12,20 @@ export function exportBackup() {
     app.toast("Backup exported.");
   }
 
-export function importBackup(file) {
+export async function importBackup(file) {
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       try {
         const parsed = JSON.parse(reader.result);
         if (!validateState(parsed)) throw new Error("This file is not a valid CarePlan version 1 backup.");
-        if (!confirm("Importing replaces all current data in this browser. Export a backup first if needed. Continue?")) return;
+        if (!confirm("Importing replaces the project data in MySQL. Export a backup first if needed. Continue?")) return;
+        const previousState = app.state;
         app.state = parsed;
-        if (!app.persist("Backup imported.")) return;
+        if (!await app.persist("Backup imported to MySQL.")) {
+          app.state = previousState;
+          app.render();
+        }
       } catch (error) {
         app.toast(error.message || "Could not read the backup file.", true);
       }
